@@ -3,24 +3,24 @@ const { test, expect } = require('@playwright/test');
 
 /* Exercise 3 - Go to the Google landing page, search for “Playwright getting started”, 
 click on the Playwright Getting Started link and validate that we ended up there. */
-/*test('Validate if we can get to Playrwright Getting Started page from google', async ({ page }) => {
-    await page.goto('https://www.google.com/');
+test.skip('Validate if we can get to Playrwright Getting Started page from google', async ({ page }) => {
+  await page.goto('https://www.google.com/');
 
-    await page.getByRole('button', {name: 'Zaakceptuj wszystko'}).click();
+  await page.getByRole('button', { name: 'Zaakceptuj wszystko' }).click();
 
-    await page.getByLabel('Szukaj', { exact: true }).fill("Playwright getting started");
+  await page.getByLabel('Szukaj', { exact: true }).fill("Playwright getting started");
 
-    await page.keyboard.press("Enter");
+  await page.keyboard.press("Enter");
 
-    await page.getByRole('link', { name: 'Installation | Playwright' }).click();
+  await page.getByRole('link', { name: 'Installation | Playwright' }).click();
 
-    await expect(page.getByRole('heading', { name: 'Installation' })).toBeVisible();
-
-
-  });
+  await expect(page.getByRole('heading', { name: 'Installation' })).toBeVisible();
 
 
-test('Validate if we can end up to Playrwright Getting Started - 2', async ({ page }) => {
+});
+
+
+test.skip('Validate if we can end up to Playrwright Getting Started - 2', async ({ page }) => {
   await page.goto('https://www.google.com/');
 
   await page.locator("#L2AGLb").click();
@@ -35,7 +35,7 @@ test('Validate if we can end up to Playrwright Getting Started - 2', async ({ pa
 
 
 });
-*/
+
 
 /* Exercise 4 - It is possible to enter a new todo */
 test('it is possible to enter a new todo', async ({ page }) => {
