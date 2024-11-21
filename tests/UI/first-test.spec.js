@@ -18,7 +18,7 @@ click on the Playwright Getting Started link and validate that we ended up there
 
 
   });
-*/
+
 
 test('Validate if we can end up to Playrwright Getting Started - 2', async ({ page }) => {
   await page.goto('https://www.google.com/');
@@ -35,6 +35,7 @@ test('Validate if we can end up to Playrwright Getting Started - 2', async ({ pa
 
 
 });
+*/
 
 /* Exercise 4 - It is possible to enter a new todo */
 test('it is possible to enter a new todo', async ({ page }) => {
