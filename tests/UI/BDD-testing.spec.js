@@ -163,3 +163,48 @@ test('SCENARIO: User should be able to edit existing todo item and change the na
     });
 });
 
+// # Extra
+test.skip('SCENARIO: User should be able to delete the completed tasks with the button "Clear Completed", and only them ', async ({ page }) => {
+    let checked = 0;
+    const items = ['have lunch', 'do playwright tasks', 'study javascript', 'read emails', 'write thesis'];
+
+    await test.step('GIVEN: User has completed and not completed tasks in the list', async () => {
+        await page.goto('https://todomvc.com/examples/react/dist/');
+        for (let index = 0; index < items.length; index++) {
+            await page.getByTestId("text-input").fill(items[index]);
+            await page.keyboard.press("Enter");
+            if (index % 2 == 0) {
+                await page.locator('div').filter({ hasText: items[index] }).getByTestId('todo-item-toggle').click();
+                expect(page.locator('div').filter({ hasText: items[index] }).getByTestId('todo-item-toggle')).toBeChecked
+                checked++;
+            } else {
+                expect(page.locator('div').filter({ hasText: items[index] }).getByTestId('todo-item-toggle')).not.toBeChecked
+            }
+        }
+        await expect(page.getByTestId('todo-list')).toBeVisible();
+    });
+
+    await test.step('WHEN: User clicks the buttons "Clear Completed" ', async () => {
+        await page.getByRole('button', { name: 'Clear Completed' }).click();
+    });
+
+    await test.step('THEN: All the checked items should be deleted', async () => {
+        // const not_checked = items.length - checked
+        // await page.getByRole('link', { name: 'Completed' }).click();
+        // for (i = 0; i < checked; i++) {
+
+        // }
+        //await expect(page.getByTestId('todo-list')).toHaveCount(items.length - checked);
+
+        await page.getByRole('link', { name: 'Completed' }).click();
+        await expect(page.getByTestId('todo-list')).toHaveCount(0);
+
+        await page.getByRole('link', { name: 'Active' }).click();
+        await expect(page.getByTestId('todo-list')).toHaveCount(items.length - checked);
+
+    });
+
+    //<li class="" data-testid="todo-item"> [...] </li> // list item class shows when they are checked or not
+    //<span class="todo-count">2 items left!</span> // this tag shows how many items are not checked
+});
+
