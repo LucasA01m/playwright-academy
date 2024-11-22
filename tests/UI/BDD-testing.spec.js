@@ -105,61 +105,100 @@ test('SCENARIO: User should be able to remove the completed todos.', async ({ pa
 
 // #3
 test('SCENARIO: User should be able to toggle multiple tasks as completed from complete all toggle.', async ({ page }) => {
-    await test.step('GIVEN: User has opened the todomvc todos page.', async () => {
+    const items = ['have lunch', 'do playwright tasks', 'study javascript', 'read emails', 'write thesis'];
 
+    await test.step('GIVEN: User has multiple unchecked tasks', async () => {
+        await page.goto('https://todomvc.com/examples/react/dist/');
+        for (let index = 0; index < items.length; index++) {
+            await page.getByTestId("text-input").fill(items[index]);
+            await page.keyboard.press("Enter");
+            await expect(page.getByTestId('todo-list')).toContainText(items[index]);
+            //expect(page.locator('div').filter({ hasText: items[index] }).getByTestId('todo-item-toggle')).not.toBeChecked();
+        }
+        expect(page.getByTestId('todo-list')).toBeVisible();
+        await expect(page.locator('span')).toContainText(String(items.length));
     });
 
-    await test.step('WHEN: User types a new todo and submits it.', async () => {
-
+    await test.step('WHEN: User clicks the "Complete all" button', async () => {
+        await page.getByTestId("toggle-all").click();
     });
 
-    await test.step('THEN: User should see the new todo was added.', async () => {
-
+    await test.step('THEN: All unchecked tasks should be checked as completed', async () => {
+        await expect(page.locator('span')).toContainText('0');
     });
 });
 
 // #4
 test('SCENARIO: User should be able to remove an added todo with x icon.', async ({ page }) => {
-    await test.step('GIVEN: User has opened the todomvc todos page.', async () => {
+    await test.step('GIVEN: User has a item in the list', async () => {
+        await page.goto('https://todomvc.com/examples/react/dist/');
 
+        await page.getByTestId("text-input").fill('buy milk');
+        await page.keyboard.press("Enter");
     });
 
-    await test.step('WHEN: User types a new todo and submits it.', async () => {
-
+    await test.step('WHEN: User clicks the x button to delete', async () => {
+        await page.getByTestId('todo-item').first().hover();
+        await page.getByTestId('todo-item-button').first().click();
     });
 
-    await test.step('THEN: User should see the new todo was added.', async () => {
-
+    await test.step('THEN: The item should disappear', async () => {
+        await expect(page.getByTestId("toggle-all")).not.toBe();
     });
 });
 
 // #5
 test('SCENARIO: User should be able to uncheck a completed todo item from todo list that has multiple items.', async ({ page }) => {
-    await test.step('GIVEN: User has opened the todomvc todos page.', async () => {
-
+    const items = ['have lunch', 'do playwright tasks', 'study javascript', 'read emails', 'write thesis'];
+    await test.step('GIVEN: User hasmultiple items added to the list', async () => {
+        await page.goto('https://todomvc.com/examples/react/dist/');
+        for (let index = 0; index < items.length; index++) {
+            await page.getByTestId("text-input").fill(items[index]);
+            await page.keyboard.press("Enter");
+            expect(page.locator('div').filter({ hasText: items[index] }).getByTestId('todo-item-toggle')).not.toBeChecked
+            await expect(page.getByTestId('todo-list')).toBeVisible();
+        }
     });
 
-    await test.step('WHEN: User types a new todo and submits it.', async () => {
-
+    await test.step('WHEN: User clicks in an item checkbox', async () => {
+        await page.getByTestId('todo-item-toggle').first().click();
     });
 
-    await test.step('THEN: User should see the new todo was added.', async () => {
-
+    await test.step('THEN: Only checked item should be checked', async () => {
+        for (let index = 0; index < items.length; index++) {
+            if (index == 0) {
+                expect(page.locator('div').filter({ hasText: items[index] }).getByTestId('todo-item-toggle')).toBeChecked
+            }
+            expect(page.locator('div').filter({ hasText: items[index] }).getByTestId('todo-item-toggle')).not.toBeChecked
+            await expect(page.getByTestId('todo-list')).toBeVisible();
+        }
     });
 });
 
 // #6
 test('SCENARIO: User should be able to edit existing todo item and change the name to a new one.', async ({ page }) => {
-    await test.step('GIVEN: User has opened the todomvc todos page.', async () => {
-
+    const items = ['have lunch', 'do playwright tasks', 'study javascript', 'read emails', 'write thesis'];
+    let original = '';
+    await test.step('GIVEN: User has items added to the list', async () => {
+        await page.goto('https://todomvc.com/examples/react/dist/');
+        for (let index = 0; index < items.length; index++) {
+            await page.getByTestId("text-input").fill(items[index]);
+            await page.keyboard.press("Enter");
+            expect(page.locator('div').filter({ hasText: items[index] }).getByTestId('todo-item-toggle')).not.toBeChecked
+            await expect(page.getByTestId('todo-list')).toBeVisible();
+        }
+        original = await page.getByTestId('todo-item-label').first().textContent();
     });
 
-    await test.step('WHEN: User types a new todo and submits it.', async () => {
-
+    await test.step('WHEN: User edits and confirm the changes.', async () => {
+        await page.getByTestId('todo-item').first().dblclick();
+        await page.getByTestId('todo-list').getByTestId('todo-item').first().getByTestId('text-input').fill('changes');
+        await page.keyboard.press("Enter");
     });
 
-    await test.step('THEN: User should see the new todo was added.', async () => {
-
+    await test.step('THEN: That item should be different', async () => {
+        await expect(page.getByTestId('todo-item').first()).not.toContainText(original);
+        await expect(page.getByTestId('todo-item').first()).toContainText('changes');
     });
 });
 
